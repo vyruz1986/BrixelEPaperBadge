@@ -1,6 +1,7 @@
 #include <GxEPD.h>
 #include <GxGDEH0213B73/BitmapExamples.h>
 #include <logos.h>
+#include <wifi_manager.h>
 
 //#include <GxGDEW0213I5F/GxGDEW0213I5F.h>  // 2.13" b/w 104x212 flexible
 //#include <GxGDE0213B1/GxGDE0213B1.h>      // 2.13" b/w
@@ -52,12 +53,14 @@
 GxIO_Class io(SPI, /*CS=*/EPD_CS, /*DC=*/EPD_DC, /*RST=*/EPD_RSET);
 GxEPD_Class display(io, /*RST=*/EPD_RSET, /*BUSY=*/EPD_BUSY);
 
+WifiManager *a = new WifiManager();
+
 void setup()
 {
+  Serial.begin(115200);
+  ESP_LOGI(__FILE__, "Starting up...");
+
   display.init();
-  // display.eraseDisplay();
-  // comment out next line to have no or minimal Adafruit_GFX code
-  // display.drawPaged(drawHelloWorld); // version for AVR using paged drawing, works also on other processors
 
   display.setTextColor(GxEPD_BLACK);
   const GFXfont *f = &FreeMonoBold9pt7b;
@@ -68,7 +71,9 @@ void setup()
   display.setCursor(0, 80);
   display.println("Initializing...");
   display.update();
-  delay(500);
+
+  a->setup();
+
   display.println("Scanning wifi networks...");
   display.update();
 }
