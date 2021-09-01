@@ -1,37 +1,5 @@
-#include <GxEPD.h>
-#include <GxGDEH0213B73/BitmapExamples.h>
-#include <logos.h>
-#include <wifi_manager.h>
-
-//#include <GxGDEW0213I5F/GxGDEW0213I5F.h>  // 2.13" b/w 104x212 flexible
-//#include <GxGDE0213B1/GxGDE0213B1.h>      // 2.13" b/w
-// #include <GxGDEH0213B72/GxGDEH0213B72.h> // 2.13" b/w new panel
-#include <GxGDEH0213B73/GxGDEH0213B73.h> // 2.13" b/w newer panel
-
-// GxEPD_MinimumExample by Jean-Marc Zingg
-
-#include <GxIO/GxIO_SPI/GxIO_SPI.h>
-#include <GxIO/GxIO.h>
-
-// FreeFonts from Adafruit_GFX
-#include <Fonts/FreeMonoBold9pt7b.h>
-#include <Fonts/FreeMonoBold12pt7b.h>
-#include <Fonts/FreeMonoBold18pt7b.h>
-#include <Fonts/FreeMonoBold24pt7b.h>
-
-#define EPD_MOSI (23)
-#define EPD_MISO (-1)
-#define EPD_SCLK (18)
-#define EPD_CS (5)
-
-#define EPD_BUSY (4)
-#define EPD_RSET (16)
-#define EPD_DC (17)
-
-#define SDCARD_CS (13)
-#define SDCARD_MOSI (15)
-#define SDCARD_MISO (2)
-#define SDCARD_SCLK (14)
+#include <WifiHelper.h>
+#include <DisplayHelper.h>
 
 #define BUTTON_1 (39)
 #define BUTTONS \
@@ -50,54 +18,61 @@
 #define _HAS_LED_
 #define _HAS_SDCARD_
 
-GxIO_Class io(SPI, /*CS=*/EPD_CS, /*DC=*/EPD_DC, /*RST=*/EPD_RSET);
-GxEPD_Class display(io, /*RST=*/EPD_RSET, /*BUSY=*/EPD_BUSY);
+void wifiConfigPortalStartCallback(ESP_WiFiManager *wm);
 
-WifiManager *a = new WifiManager();
+void wifiApConnectedCallback();
+
+DisplayHelper displayHelper;
+WifiHelper wifiHelper(wifiConfigPortalStartCallback, wifiApConnectedCallback);
 
 void setup()
 {
   Serial.begin(115200);
   ESP_LOGI(__FILE__, "Starting up...");
 
-  display.init();
+  displayHelper.setup();
+  displayHelper.showBigLogo();
+  wifiHelper.setup();
 
-  display.setTextColor(GxEPD_BLACK);
-  const GFXfont *f = &FreeMonoBold9pt7b;
-  display.setFont(f);
-
-  display.setRotation(1);
-  display.drawBitmap(bmp_brixel_big, 0, 0, 250, 64, GxEPD_WHITE);
-  display.setCursor(0, 80);
-  display.println("Initializing...");
-  display.update();
-
-  a->setup();
-
-  display.println("Scanning wifi networks...");
-  display.update();
+  ESP_LOGI(__FILE__, "Awaiting configuration on AP %s", wifiHelper.apName);
 }
 
-void loop(){
-    //   display.drawExampleBitmap(BitmapExample1, sizeof(BitmapExample1));
-    //   delay(2000);
-    //   display.drawExampleBitmap(BitmapExample2, sizeof(BitmapExample2));
-    //   delay(5000);
-    // #if !defined(__AVR)
-    //   display.drawExampleBitmap(BitmapExample3, sizeof(BitmapExample3));
-    //   delay(5000);
-    //   display.drawExampleBitmap(logo, sizeof(logo));
-    //   delay(5000);
-    //   display.drawExampleBitmap(first, sizeof(first));
-    //   delay(5000);
-    //   display.drawExampleBitmap(second, sizeof(second));
-    //   delay(5000);
-    //   display.drawExampleBitmap(third, sizeof(third));
-    //   delay(5000);
-    // #endif
-    //   display.fillScreen(GxEPD_WHITE);
-    // display.drawExampleBitmap(BitmapExample1, 0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, GxEPD_BLACK);
-    //   display.update();
-    //   delay(5000);
-    //   // showBoat();
+void loop()
+{
+  wifiHelper.loop();
+  //   display.drawExampleBitmap(BitmapExample1, sizeof(BitmapExample1));
+  //   delay(2000);
+  //   display.drawExampleBitmap(BitmapExample2, sizeof(BitmapExample2));
+  //   delay(5000);
+  // #if !defined(__AVR)
+  //   display.drawExampleBitmap(BitmapExample3, sizeof(BitmapExample3));
+  //   delay(5000);
+  //   display.drawExampleBitmap(logo, sizeof(logo));
+  //   delay(5000);
+  //   display.drawExampleBitmap(first, sizeof(first));
+  //   delay(5000);
+  //   display.drawExampleBitmap(second, sizeof(second));
+  //   delay(5000);
+  //   display.drawExampleBitmap(third, sizeof(third));
+  //   delay(5000);
+  // #endif
+  //   display.fillScreen(GxEPD_WHITE);
+  // display.drawExampleBitmap(BitmapExample1, 0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, GxEPD_BLACK);
+  //   display.update();
+  //   delay(5000);
+  //   // showBoat();
 };
+
+void wifiConfigPortalStartCallback(ESP_WiFiManager *wm)
+{
+  char msg[100];
+  snprintf(msg, sizeof(msg), "No known wifi AP in range, configure badge by connecting to: %s", wifiHelper.apName);
+  ESP_LOGI(__FILE__, "No known wifi AP in range, configure badge by connecting to: %s", wifiHelper.apName);
+  displayHelper.println(0, 80, msg);
+  displayHelper.update();
+}
+
+void wifiApConnectedCallback()
+{
+  ESP_LOGI(__FILE__, "Connected to wifi!");
+}
