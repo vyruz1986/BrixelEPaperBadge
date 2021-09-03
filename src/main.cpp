@@ -70,7 +70,6 @@ void wifiConfigPortalStartCallback(ESP_WiFiManager *wm)
   ESP_LOGI(__FILE__, "No known wifi AP in range, configure badge by connecting to: %s", wifiHelper.apName);
   // displayHelper.println(0, 80, msg);
   displayHelper.showText(msg);
-  displayHelper.updateTextArea();
 }
 
 void wifiApConnectedCallback()

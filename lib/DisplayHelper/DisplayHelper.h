@@ -3,10 +3,7 @@
 
 #include <Arduino.h>
 #include "logos/logos.h"
-#include <GxEPD.h>
-#include <GxGDEH0213B73/GxGDEH0213B73.h>
-#include <GxIO/GxIO_SPI/GxIO_SPI.h>
-#include <GxIO/GxIO.h>
+#include <GxEPD2_BW.h>
 
 // FreeFonts from Adafruit_GFX
 // #include <Fonts/FreeSans9pt7b.h>
@@ -37,8 +34,7 @@ public:
     } currentMode = Start;
 
 private:
-    GxIO_Class io;
-    GxEPD_Class display;
+    GxEPD2_BW<GxEPD2_213_B73, 250> display;
 
     struct ScreenPos
     {
