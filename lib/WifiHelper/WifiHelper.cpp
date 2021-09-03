@@ -3,7 +3,7 @@
 WifiHelper::WifiHelper(void (*startApMode)(ESP_WiFiManager *wm), void (*configSaved)())
     : wm(apName)
 {
-    sprintf(apName, "BB%08X", ESP.getEfuseMac());
+    sprintf(apName, "BrixelBadge%08X", ESP.getEfuseMac());
 
     // wm.setAPStaticIPConfig(IPAddress(192, 168, 132, 1), IPAddress(192, 168, 132, 1), IPAddress(255, 255, 255, 0));
     wm.setAPCallback(startApMode);

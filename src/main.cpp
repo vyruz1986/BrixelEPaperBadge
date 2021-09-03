@@ -31,7 +31,7 @@ void setup()
   ESP_LOGI(__FILE__, "Starting up...");
 
   displayHelper.setup();
-  displayHelper.showBigLogo();
+  displayHelper.showStartScreen();
   wifiHelper.setup();
 
   ESP_LOGI(__FILE__, "Awaiting configuration on AP %s", wifiHelper.apName);
@@ -66,10 +66,11 @@ void loop()
 void wifiConfigPortalStartCallback(ESP_WiFiManager *wm)
 {
   char msg[100];
-  snprintf(msg, sizeof(msg), "No known wifi AP in range, configure badge by connecting to: %s", wifiHelper.apName);
+  snprintf(msg, sizeof(msg), "No known wifi AP in range, configure badge by connecting to:\n%s", wifiHelper.apName);
   ESP_LOGI(__FILE__, "No known wifi AP in range, configure badge by connecting to: %s", wifiHelper.apName);
-  displayHelper.println(0, 80, msg);
-  displayHelper.update();
+  // displayHelper.println(0, 80, msg);
+  displayHelper.showText(msg);
+  displayHelper.updateTextArea();
 }
 
 void wifiApConnectedCallback()
